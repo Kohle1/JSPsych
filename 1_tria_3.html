@@ -20,77 +20,78 @@
     var jsPsych = initJsPsych({
       on_finish: function() {
         jsPsych.data.displayData();
-        //jsPsych.data.get().localSave('csv', 'data.csv');
+        jsPsych.data.get().localSave('csv', 'data.csv');
       }
     });
 
     /* create timeline */
     var timeline = [];
 
-function csvToArray(str, noHeader=false,quote="\"",delimiter = ",") {
-  /// ヘッダー行の値配列を取得
-  const headers = str.split('\n')[0].split(delimiter)
+    function csvToArray(str, noHeader=false,quote="\"",delimiter = ",") {
+      /// ヘッダー行の値配列を取得
+      const headers = str.split('\n')[0].split(delimiter)
 
-  /// 各行のテキスト配列を取得
-  const rows = str.slice(str.indexOf("\n") + 1)
-            .split(/\n|\r\n|\r/)
+      /// 各行のテキスト配列を取得
+      const rows = str.slice(str.indexOf("\n") + 1)
+                .split(/\n|\r\n|\r/)
 
-  /// 各行の値配列・オブジェクトの配列に変換
-  /// noHeaderがfalseならヘッダーカラム名付きで、
-  /// trueならカラム名なしの配列として返す
-  const arr = rows.map(function (row) {
-    const values = row.split(quote+delimiter+quote);
-    const el = headers.reduce(
-      function (obj, header, i) {
-        const v = values[i].replaceAll('\"',"")
-        if(noHeader){
-          obj.push(v)
-        }else{
-          obj[header] = v;
-        }
-        return obj;
-      }, (noHeader) ? [] : {}
-    );
-    return el;
-  });
+      /// 各行の値配列・オブジェクトの配列に変換
+      /// noHeaderがfalseならヘッダーカラム名付きで、
+      /// trueならカラム名なしの配列として返す
+      const arr = rows.map(function (row) {
+        const values = row.split(quote+delimiter+quote);
+        const el = headers.reduce(
+          function (obj, header, i) {
+            const v = values[i].replaceAll('\"',"")
+            if(noHeader){
+              obj.push(v)
+            }else{
+              obj[header] = v;
+            }
+            return obj;
+          }, (noHeader) ? [] : {}
+        );
+        return el;
+      });
 
-  // return the array
-  return arr;
-}
+      // return the array
+      return arr;
+    }
 
-/// CSVテキスト
-const csv =`
-A,B,C,D
-1-A,1-B,1-C,1-D
-2-A,2-B,2-C,2-D    
-3-A,3-B,3-C,3-D
-4-A,4-B,4-C,4-D
-5-A,5-B,5-C,5-D
-`.trim()
-const obj = csvToArray(csv, false, "")
+    /// CSVテキスト
+    const csv =`
+    A,B,C,D
+    1-A,1-B,1-C,1-D
+    2-A,2-B,2-C,2-D    
+    3-A,3-B,3-C,3-D
+    4-A,4-B,4-C,4-D
+    5-A,5-B,5-C,5-D
+    `.trim()
+    const obj = csvToArray(csv, false, "")
 
-// 配列を作成 (参考：https://step-learn.com/article/javascript/216-array-serial.html) (参考2：https://yara-shimizu.com/programing/javascript/make-js-nums-array)
-//配列のランダム化
-function shuffleArray(inputArray){
-  inputArray.sort(()=> Math.random() - 0.5);
-}
-var aaa = [...Array(obj.lengh).keys()];
-shuffleArray(aaa);
+    // 配列を作成 (参考：https://step-learn.com/article/javascript/216-array-serial.html) (参考2：https://yara-shimizu.com/programing/javascript/make-js-nums-array)
+    //配列のランダム化
+    function shuffleArray(inputArray){
+      inputArray.sort(()=> Math.random() - 0.5);
+    }
+    var aaa = [...Array(obj.length).keys()];
+    shuffleArray(aaa);
 
 
-for(var value = 0; value < aaa.length; value++) {
-  var textttt = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: value + '  ' + obj[aaa[value]]["A"] + '  ' + aaa[value],
-    choices: "NO_KEYS",
-    trial_duration: 3000,
-    data: {
-      task: "A" + value
-    },        
-  };
-    
-  timeline.push(eval("var text_" + aaa[value] + "=" + JSON.stringify(textttt) + ";"));
-}
+    for(var value = 0; value < aaa.length; value++) {
+      var textttt = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: value + '  ' + obj[aaa[value]]["A"] + '  ' + aaa[value],
+        choices: "NO_KEYS",
+        trial_duration: 3000,
+        data: {
+          task: "stim1_" + value
+        },        
+      };
+            
+      timeline.push(window[`text_${aaa[value]}`] = textttt);
+      //timeline.push(eval("var text_" + aaa[value] + "=" + textttt + ";"));      
+    }
 
     /* define debrief */
     var Owari = {
